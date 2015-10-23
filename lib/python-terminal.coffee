@@ -11,18 +11,13 @@ open_terminal = (dirpath) ->
   atom.commands.add 'atom-text-editor', 'godep:save', =>
   sys = require('sys')
   exec = require('child_process').exec
-
   godep_save_cmd = "godep save -r"
-
   child = exec godep_save_cmd, (error, stdout, stderr) ->
-    console.log('\ngodep stdout: ' + stdout);
-    console.log ('\ngodep stderr: ' + stderr);
     if error
       console.log('\ngodep save exec error: ' + error)
 
   # Figure out the app and the arguments
-  app = atom.config.get('atom-terminal.app')
-  args = atom.config.get('atom-terminal.args')
+  app = atom.config.get('python-terminal.app')
   editor = atom.workspace.getActivePaneItem()
   file = editor?.buffer?.file
   filepath = file?.path
@@ -30,51 +25,17 @@ open_terminal = (dirpath) ->
   # Python
   echo = "echo 'Press any key to continue ...'"
   args = '-e bash -c "python ' + filepath + ' ; ' + echo + ' ; read"'
-  console.log("atom-terminal executing: ", args)
-
-  # get options
-  setWorkingDirectory = atom.config.get('atom-terminal.setWorkingDirectory')
-  surpressDirArg = atom.config.get('atom-terminal.surpressDirectoryArgument')
-  runDirectly = atom.config.get('atom-terminal.MacWinRunDirectly')
 
   # Start assembling the command line
   cmdline = "\"#{app}\" #{args}"
 
-  # If we do not supress the directory argument, add the directory as an argument
-  if !surpressDirArg
-    cmdline  += " \"#{dirpath}\""
-
-  # For mac, we prepend open -a unless we run it directly
-  if platform() == "darwin" && !runDirectly
-    cmdline = "open -a " + cmdline
-
-  # for windows, we prepend start unless we run it directly.
-  if platform() == "win32" && !runDirectly
-    cmdline = "start \"\" " + cmdline
-
-  # log the command so we have context if it fails
-  console.log("atom-terminal executing: ", cmdline)
-
-
-  # Set the working directory if configured
-  if setWorkingDirectory
-    exec cmdline, cwd: dirpath if dirpath?
-  else
-    exec cmdline if dirpath?
-
+  exec cmdline if dirpath?
 
 module.exports =
     activate: ->
-        atom.commands.add "atom-workspace", "atom-terminal:open", => @open()
-        atom.commands.add "atom-workspace", "atom-terminal:open-project-root", => @openroot()
-    open: ->
-        editor = atom.workspace.getActivePaneItem()
-        file = editor?.buffer?.file
-        filepath = file?.path
+        atom.commands.add "atom-workspace", "python-terminal:open-project-root", => @open()
 
-        if filepath
-            open_terminal path.dirname(filepath)
-    openroot: ->
+    open: ->
         open_terminal pathname for pathname in atom.project.getPaths()
 
 # Set per-platform defaults
