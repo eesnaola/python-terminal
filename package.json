@@ -1,0 +1,18 @@
+{
+  "name": "python-terminal",
+  "main": "./lib/python-terminal",
+  "version": "0.0.1",
+  "description": "A short description of your package",
+  "keywords": [
+  ],
+  "activationCommands": {
+    "atom-workspace": "python-terminal:toggle"
+  },
+  "repository": "https://github.com/atom/python-terminal",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+  }
+}
